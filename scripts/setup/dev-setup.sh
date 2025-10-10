@@ -135,14 +135,17 @@ print_header "Development environment setup completed!"
 echo
 print_status "Services available at:"
 echo "  • PostgreSQL: localhost:5432"
-echo "  • MongoDB: localhost:27017"
+echo "  • MongoDB: localhost:27017" 
 echo "  • Redis: localhost:6379"
 echo "  • RabbitMQ Management: http://localhost:15672 (frankenstein/frankenstein123)"
 echo "  • Kafka: localhost:9092"
 echo "  • LocalStack: http://localhost:4566"
 echo
-print_status "To start the monitoring stack:"
-echo "  docker-compose up -d prometheus grafana jaeger elasticsearch kibana logstash"
+print_status "To start the monitoring and feature flag stack:"
+echo "  docker-compose up -d prometheus grafana jaeger elasticsearch kibana logstash unleash"
+echo
+print_status "Feature Flag Management:"
+echo "  • Unleash Dashboard: http://localhost:4242 (admin/unleash4242)"
 echo
 print_status "To start a service:"
 echo "  mvn spring-boot:run -pl services/user-service"

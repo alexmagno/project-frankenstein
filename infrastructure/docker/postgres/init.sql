@@ -1,6 +1,7 @@
 -- Create shared database for all microservices
 CREATE DATABASE frankenstein_shared;
 CREATE DATABASE sonarqube;
+CREATE DATABASE unleash;
 
 -- Create users for each service (for security and auditing)
 CREATE USER user_service_user WITH ENCRYPTED PASSWORD 'userservice123';
@@ -12,6 +13,7 @@ GRANT ALL PRIVILEGES ON DATABASE frankenstein_shared TO user_service_user;
 GRANT ALL PRIVILEGES ON DATABASE frankenstein_shared TO product_service_user;  
 GRANT ALL PRIVILEGES ON DATABASE frankenstein_shared TO order_service_user;
 GRANT ALL PRIVILEGES ON DATABASE sonarqube TO frankenstein;
+GRANT ALL PRIVILEGES ON DATABASE unleash TO frankenstein;
 
 -- Connect to shared database and create extensions
 \c frankenstein_shared;

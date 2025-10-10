@@ -42,6 +42,7 @@ This project serves as a hands-on laboratory for exploring and understanding cur
 - **State Management**: Redux Toolkit
 - **UI Library**: Material-UI / Ant Design
 - **Authentication**: OAuth 2.0 integration
+- **Feature Flags**: Unleash (self-hosted) for feature toggles and A/B testing
 
 ### Infrastructure & DevOps
 - **Containerization**: Docker & Docker Compose
@@ -177,6 +178,7 @@ project-frankenstein/
    - Frontend: http://localhost:3000
    - API Gateway: http://localhost:8080
    - Config Server: http://localhost:8888
+   - Unleash (Feature Flags): http://localhost:4242
    - Grafana: http://localhost:3001
    - Kibana: http://localhost:5601
 
