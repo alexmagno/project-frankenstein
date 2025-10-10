@@ -23,14 +23,16 @@ This project serves as a hands-on laboratory for exploring and understanding cur
 ### Backend Technologies
 - **Framework**: Spring Boot 3.x with Spring WebFlux
 - **Security**: OAuth 2.0, JWT, Social Login (Google, GitHub)
-- **Data**: 
-  - **Primary**: Shared PostgreSQL database with schema-based domain separation
-  - **Secondary**: MongoDB for user preferences and social data
-  - **Migrations**: Flyway for coordinated schema management
+- **Architecture**: CQRS (Command Query Responsibility Segregation) + Event Sourcing
+- **Data Architecture**: 
+  - **Write Side (Commands)**: Shared PostgreSQL with schema separation + Event Store
+  - **Read Side (Queries)**: MongoDB with optimized document views
+  - **Event Streaming**: Apache Kafka for event-driven projections
+  - **Migrations**: Flyway for PostgreSQL schema management
 - **Resilience**: Resilience4j (Circuit Breaker, Bulkhead, Rate Limiter)
 - **Communication**: 
   - Sync: OpenFeign, Load Balancer
-  - Async: RabbitMQ, Apache Kafka
+  - Async: RabbitMQ, Apache Kafka, Event Sourcing
 - **Caching**: Redis with Spring Cache
 - **Batch Processing**: Spring Batch
 - **API Documentation**: OpenAPI 3.0 (Swagger)

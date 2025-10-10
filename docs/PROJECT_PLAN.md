@@ -117,73 +117,89 @@ This approach is well-suited for learning microservices patterns while maintaini
 - [ ] Define domain events for cross-service communication
 - [ ] Implement value objects and domain services
 
-### **Step 2.2: Shared Database Layer Implementation**
-- [ ] **Shared Database Design**:
+### **Step 2.2: CQRS + Event Sourcing Database Implementation**
+- [ ] **Write Side (Command) - PostgreSQL Setup**:
   - [ ] Design unified database schema with domain separation
   - [ ] Create Flyway migration scripts for shared PostgreSQL database
   - [ ] Implement schema-based logical separation (user_domain, product_domain, order_domain)
-  - [ ] Design cross-domain relationships and foreign keys
-- [ ] **User Domain Schema**:
-  - [ ] Create user_domain schema tables and relationships
-  - [ ] Implement JPA entities with schema annotation (@Table(schema="user_domain"))
-  - [ ] Set up MongoDB repositories for user preferences (separate database)
-  - [ ] Create user domain initialization data
-- [ ] **Product Domain Schema**:
-  - [ ] Create product_domain schema tables for catalog and inventory
-  - [ ] Implement JPA entities with proper schema mapping
-  - [ ] Set up database indexes for product search and performance
-  - [ ] Create sample product data and categories
-- [ ] **Order Domain Schema**:
-  - [ ] Create order_domain schema for order processing and payments
-  - [ ] Implement cross-schema relationships (orders → users, order_items → products)
-  - [ ] Set up audit trail tables in shared_domain schema
-  - [ ] Create order status workflow and state transition tables
-- [ ] **Shared Domain Schema**:
-  - [ ] Create shared lookup tables (countries, currencies, etc.)
-  - [ ] Implement audit and logging tables
-  - [ ] Create system configuration tables
-  - [ ] Set up cross-cutting concern tables (notifications, etc.)
+  - [ ] **Event Store Implementation**:
+    - [ ] Create events table in shared_domain schema
+    - [ ] Create snapshots table for performance optimization
+    - [ ] Implement event versioning and metadata structure
+    - [ ] Set up event indexing and partitioning strategies
+- [ ] **Read Side (Query) - MongoDB Setup**:
+  - [ ] Design denormalized MongoDB collections for optimal read performance
+  - [ ] Create user_views collection with aggregated user data
+  - [ ] Create product_views collection with inventory and category data
+  - [ ] Create order_views collection with order history and analytics
+  - [ ] Set up MongoDB indexes for query optimization
+- [ ] **Domain Schemas (Write Side)**:
+  - [ ] **User Domain**: Create user_domain schema tables and relationships
+  - [ ] **Product Domain**: Create product_domain schema for catalog and inventory
+  - [ ] **Order Domain**: Create order_domain schema for transactions
+  - [ ] **Shared Domain**: Event store, snapshots, and cross-cutting concerns
+- [ ] **Event-Driven Projections**:
+  - [ ] Design event projection mappings (PostgreSQL events → MongoDB views)
+  - [ ] Implement eventual consistency strategy between write and read sides
+  - [ ] Set up event replay mechanisms for read model rebuilding
+  - [ ] Create projection versioning and migration strategies
 
-### **Step 2.3: Repository Layer**
-- [ ] Implement Spring Data JPA repositories for each service
-- [ ] Create custom repository methods with proper query optimization
-- [ ] Set up MongoDB repositories for user preferences
-- [ ] Implement repository integration tests with TestContainers
-- [ ] Add pagination and sorting capabilities
+### **Step 2.3: CQRS Repository Implementation**
+- [ ] **Command Side Repositories (PostgreSQL)**:
+  - [ ] Implement Spring Data JPA repositories for write operations
+  - [ ] Create event store repository for event persistence
+  - [ ] Implement snapshot repository for performance optimization
+  - [ ] Create aggregate repository pattern for domain objects
+- [ ] **Query Side Repositories (MongoDB)**:
+  - [ ] Implement Spring Data MongoDB repositories for read operations
+  - [ ] Create view-specific repositories (UserViewRepository, ProductViewRepository)
+  - [ ] Implement custom query methods with MongoDB aggregation
+  - [ ] Set up pagination and sorting for read operations
+- [ ] **Repository Integration Testing**:
+  - [ ] TestContainers for PostgreSQL integration tests
+  - [ ] TestContainers for MongoDB integration tests
+  - [ ] Event store testing with event replay scenarios
+  - [ ] Cross-database consistency testing
 
-### **Step 2.4: Service Layer (Business Logic)**
-- [ ] **User Service Business Logic**:
-  - [ ] User registration and profile management
-  - [ ] Password encryption and validation
-  - [ ] User role and permission management
-  - [ ] User preference handling (MongoDB)
-- [ ] **Product Service Business Logic**:
-  - [ ] Product catalog management
-  - [ ] Inventory tracking and updates
-  - [ ] Product search and filtering
-  - [ ] Category management
-- [ ] **Order Service Business Logic**:
-  - [ ] Order creation and processing workflow
-  - [ ] Payment processing integration
-  - [ ] Order status management
-  - [ ] Order history and reporting
+### **Step 2.4: CQRS Service Layer Implementation**
+- [ ] **Command Handlers (Write Side)**:
+  - [ ] **User Commands**: UserRegistrationHandler, ProfileUpdateHandler, RoleAssignmentHandler
+  - [ ] **Product Commands**: ProductCreationHandler, InventoryUpdateHandler, CategoryManagementHandler
+  - [ ] **Order Commands**: OrderCreationHandler, PaymentProcessingHandler, OrderStatusHandler
+  - [ ] Implement command validation and business rule enforcement
+  - [ ] Event publishing after successful command execution
+- [ ] **Query Handlers (Read Side)**:
+  - [ ] **User Queries**: UserProfileQuery, UserActivityQuery, UserSearchQuery
+  - [ ] **Product Queries**: ProductCatalogQuery, InventoryQuery, CategoryTreeQuery
+  - [ ] **Order Queries**: OrderHistoryQuery, OrderDetailsQuery, PaymentSummaryQuery
+  - [ ] Implement complex aggregation queries using MongoDB
+- [ ] **Event Projectors**:
+  - [ ] UserEventProjector for updating user_views collection
+  - [ ] ProductEventProjector for updating product_views collection
+  - [ ] OrderEventProjector for updating order_views collection
+  - [ ] Implement idempotent projection handling
+- [ ] **Domain Event Implementation**:
+  - [ ] Define domain events for each aggregate (UserRegistered, ProductCreated, OrderPlaced)
+  - [ ] Implement event versioning and backward compatibility
+  - [ ] Set up event publishing infrastructure with Kafka
 
-### **Step 2.5: REST API Layer**
-- [ ] **User Service APIs**:
-  - [ ] User CRUD operations
-  - [ ] Authentication endpoints
-  - [ ] Profile management endpoints
-  - [ ] User search and filtering
-- [ ] **Product Service APIs**:
-  - [ ] Product CRUD operations
-  - [ ] Product search and filtering
-  - [ ] Inventory management endpoints
-  - [ ] Category management endpoints
-- [ ] **Order Service APIs**:
-  - [ ] Order creation and management
-  - [ ] Order status tracking
-  - [ ] Order history retrieval
-  - [ ] Payment processing endpoints
+### **Step 2.5: CQRS REST API Layer**
+- [ ] **Command APIs (Write Operations)**:
+  - [ ] **User Commands**: POST /users (register), PUT /users/{id} (update), POST /users/{id}/roles
+  - [ ] **Product Commands**: POST /products (create), PUT /products/{id} (update), POST /products/{id}/inventory
+  - [ ] **Order Commands**: POST /orders (create), PUT /orders/{id}/status, POST /orders/{id}/payment
+  - [ ] Implement command validation and authorization
+  - [ ] Return command execution results (not full entity data)
+- [ ] **Query APIs (Read Operations)**:
+  - [ ] **User Queries**: GET /users/{id}/profile, GET /users/search, GET /users/{id}/activity
+  - [ ] **Product Queries**: GET /products/catalog, GET /products/{id}/details, GET /categories/tree
+  - [ ] **Order Queries**: GET /orders/history, GET /orders/{id}/details, GET /users/{id}/orders
+  - [ ] Implement pagination, filtering, and sorting for queries
+  - [ ] Optimize response structure for UI consumption
+- [ ] **Event APIs (Optional)**:
+  - [ ] GET /events/{aggregateId} for event history
+  - [ ] POST /projections/rebuild for read model rebuilding
+  - [ ] GET /health/projections for projection status monitoring
 
 ### **Step 2.6: Security Implementation**
 - [ ] Configure Spring Security for each service
@@ -405,51 +421,86 @@ This approach is well-suited for learning microservices patterns while maintaini
 
 ---
 
-## 📡 Phase 6: Async Communication
+## 📡 Phase 6: Advanced Event Sourcing & Async Communication
 
-### **Objective**: Implement event-driven architecture with RabbitMQ and Kafka
+### **Objective**: Implement advanced event sourcing patterns, event-driven architecture, and real-time capabilities
 
-### **Step 6.1: Event-Driven Architecture Design**
-- [ ] Design domain events for each service
-- [ ] Define event schemas and versioning strategy
-- [ ] Create event sourcing patterns where applicable
-- [ ] Design saga patterns for distributed transactions
-- [ ] Implement event store for audit and replay
+### **Step 6.1: Advanced Event Sourcing Patterns**
+- [ ] **Event Store Optimization**:
+  - [ ] Implement event store partitioning and sharding strategies
+  - [ ] Create event archiving and retention policies
+  - [ ] Implement event compression and storage optimization
+  - [ ] Set up event store backup and disaster recovery
+- [ ] **Snapshot Strategies**:
+  - [ ] Implement periodic snapshot creation for large aggregates
+  - [ ] Create snapshot versioning and migration strategies
+  - [ ] Optimize snapshot storage and retrieval
+  - [ ] Implement snapshot-based aggregate reconstruction
+- [ ] **Event Versioning & Schema Evolution**:
+  - [ ] Implement event schema versioning with Avro
+  - [ ] Create event upcasting for backward compatibility
+  - [ ] Set up schema registry for event contracts
+  - [ ] Implement event migration strategies
 
-### **Step 6.2: RabbitMQ Integration**
-- [ ] Configure RabbitMQ exchanges and queues
-- [ ] Implement message publishers and consumers
-- [ ] Set up dead letter queues and retry mechanisms
-- [ ] Configure message routing and binding
-- [ ] Implement message acknowledgment strategies
+### **Step 6.2: Event Replay & Time Travel**
+- [ ] **Event Replay Infrastructure**:
+  - [ ] Implement event replay from specific points in time
+  - [ ] Create read model rebuilding from event history
+  - [ ] Set up parallel event processing for faster rebuilds
+  - [ ] Implement incremental event replay for large datasets
+- [ ] **Temporal Queries**:
+  - [ ] Implement "as-of" queries for historical state
+  - [ ] Create time-travel debugging capabilities
+  - [ ] Set up historical reporting and analytics
+  - [ ] Implement temporal data compliance features
 
-### **Step 6.3: Kafka Integration**
-- [ ] Set up Kafka topics and partitions
-- [ ] Implement Kafka producers and consumers
-- [ ] Configure consumer groups and offset management
-- [ ] Set up Kafka Streams for event processing
-- [ ] Implement exactly-once delivery semantics
+### **Step 6.3: Complex Event Processing (CEP)**
+- [ ] **Kafka Streams Advanced Patterns**:
+  - [ ] Implement event correlation across multiple streams
+  - [ ] Create sliding window aggregations for real-time metrics
+  - [ ] Set up complex event pattern detection
+  - [ ] Implement stream joins for cross-domain analytics
+- [ ] **Business Process Management**:
+  - [ ] Implement long-running business processes with events
+  - [ ] Create process orchestration with event choreography
+  - [ ] Set up process monitoring and error handling
+  - [ ] Implement process compensation and rollback
 
-### **Step 6.4: Event Processing Patterns**
-- [ ] Implement Command Query Responsibility Segregation (CQRS)
-- [ ] Create event handlers for domain events
-- [ ] Set up event projection for read models
-- [ ] Implement event replay mechanisms
-- [ ] Create event-driven sagas for complex workflows
+### **Step 6.4: Event-Driven Sagas & Distributed Transactions**
+- [ ] **Saga Pattern Implementation**:
+  - [ ] Create order processing saga with compensation actions
+  - [ ] Implement user registration saga with email verification
+  - [ ] Set up payment processing saga with rollback capabilities
+  - [ ] Create inventory reservation saga with timeout handling
+- [ ] **Saga Orchestration vs Choreography**:
+  - [ ] Implement orchestrated sagas with saga manager
+  - [ ] Create choreographed sagas with event-driven coordination
+  - [ ] Compare performance and complexity of both approaches
+  - [ ] Implement hybrid saga patterns
 
-### **Step 6.5: Message Reliability**
-- [ ] Implement idempotent message processing
-- [ ] Set up message deduplication strategies
-- [ ] Configure message persistence and durability
-- [ ] Implement circuit breakers for message processing
-- [ ] Set up monitoring for message processing
+### **Step 6.5: RabbitMQ Advanced Features**
+- [ ] Configure RabbitMQ exchanges and queues for high availability
+- [ ] Implement message publishers and consumers with retry logic
+- [ ] Set up dead letter queues and poison message handling
+- [ ] Configure message routing with complex binding patterns
+- [ ] Implement priority queues for critical messages
 
-### **Step 6.6: Real-time Features**
-- [ ] Implement WebSocket connections for real-time updates
-- [ ] Create real-time notifications system
-- [ ] Set up server-sent events for status updates
-- [ ] Implement real-time dashboards
-- [ ] Create live activity feeds
+### **Step 6.6: Real-time Event Streaming**
+- [ ] **WebSocket Integration**:
+  - [ ] Implement WebSocket connections for real-time event streaming
+  - [ ] Create user-specific event subscriptions
+  - [ ] Set up event filtering and transformation for clients
+  - [ ] Implement connection management and scalability
+- [ ] **Server-Sent Events (SSE)**:
+  - [ ] Create SSE endpoints for order status updates
+  - [ ] Implement inventory change notifications
+  - [ ] Set up system health and monitoring streams
+  - [ ] Create real-time dashboard feeds
+- [ ] **Push Notifications**:
+  - [ ] Integrate with mobile push notification services
+  - [ ] Create email notification triggers from events
+  - [ ] Implement SMS notifications for critical events
+  - [ ] Set up notification preference management
 
 **Success Criteria**:
 - Events are published and consumed reliably
