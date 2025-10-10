@@ -46,10 +46,18 @@ print_status "Docker Compose found: $(docker-compose --version)"
 
 # Check Java
 if ! command -v java &> /dev/null; then
-    print_error "Java 17+ is required. Please install Java first."
+    print_error "Java 21+ is required. Please install Java 21 (LTS) first."
     exit 1
 fi
-print_status "Java found: $(java -version 2>&1 | head -1)"
+
+# Check Java version
+JAVA_VERSION=$(java -version 2>&1 | head -1 | awk -F '"' '{print $2}' | awk -F '.' '{print $1}')
+if [[ "$JAVA_VERSION" -lt 21 ]]; then
+    print_error "Java 21+ is required. Current version: $(java -version 2>&1 | head -1)"
+    print_error "Please install Java 21 LTS for the latest features."
+    exit 1
+fi
+print_status "Java 21 found: $(java -version 2>&1 | head -1)"
 
 # Check Maven
 if ! command -v mvn &> /dev/null; then

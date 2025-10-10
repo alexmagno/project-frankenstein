@@ -95,7 +95,7 @@ This project follows industry best practices and architectural patterns:
 - **12-Factor App**: Cloud-native application principles
 - **Event-Driven Architecture**: Loose coupling through async messaging
 - **CQRS**: Command Query Responsibility Segregation where applicable
-- **Modern Java**: Leveraging Java 17 Records for immutable data objects
+- **Modern Java 21**: Leveraging latest LTS features including Records, Virtual Threads, Pattern Matching, and String Templates
 
 ## 📁 Project Structure
 
@@ -137,7 +137,7 @@ project-frankenstein/
 ### Prerequisites
 - Docker & Docker Compose
 - Kubernetes (kind/minikube)
-- Java 17+
+- **Java 21** (LTS) - Required for latest features
 - Node.js 18+
 - Helm 3
 - AWS CLI (for LocalStack)
@@ -256,6 +256,9 @@ This is a learning project! Feel free to:
 ## 📖 Documentation
 
 Detailed documentation for each topic can be found in the `/docs` directory:
+- [Java 21 LTS Features Guide](docs/JAVA_21_FEATURES.md) - Complete guide to Java 21 features used in the project
+- [Database Architecture Analysis](docs/DATABASE_ARCHITECTURE_ANALYSIS.md) - Shared vs separated database trade-offs
+- [Project Implementation Plan](docs/PROJECT_PLAN.md) - Detailed 10-phase roadmap
 - [Architecture Decision Records](docs/architecture/ADRs.md)
 - [API Documentation](docs/api/)
 - [Deployment Guide](docs/deployment/)

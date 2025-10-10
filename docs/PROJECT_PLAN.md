@@ -25,7 +25,7 @@ This project follows industry best practices and architectural patterns:
 - **12-Factor App**: Cloud-native application principles
 - **Event-Driven Architecture**: Loose coupling through async messaging
 - **CQRS**: Command Query Responsibility Segregation where applicable
-- **Modern Java Features**: Leveraging Java 17 Records for immutable data classes, enhanced performance, and cleaner code
+- **Modern Java 21 LTS Features**: Leveraging the latest LTS version with Records, Virtual Threads for high-concurrency, Pattern Matching for cleaner code, String Templates for safer string handling, and Sequenced Collections
 
 ### 🗄️ **Database Architecture Decision**
 
