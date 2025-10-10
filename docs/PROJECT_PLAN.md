@@ -15,6 +15,42 @@ A comprehensive microservices learning platform demonstrating modern enterprise 
 - ⏳ **Phase 9**: Advanced Deployment - **PENDING**
 - ⏳ **Phase 10**: Documentation & Polish - **PENDING**
 
+## 🏛️ Architecture Principles
+
+This project follows industry best practices and architectural patterns:
+
+- **Clean Architecture**: Clear separation of concerns with hexagonal architecture
+- **Domain-Driven Design (DDD)**: Rich domain models with bounded contexts
+- **SOLID Principles**: Maintainable and extensible code
+- **12-Factor App**: Cloud-native application principles
+- **Event-Driven Architecture**: Loose coupling through async messaging
+- **CQRS**: Command Query Responsibility Segregation where applicable
+
+### 🗄️ **Database Architecture Decision**
+
+**Shared Database with Schema Separation**: This project uses a **shared PostgreSQL database** with logical domain separation through schemas, rather than separate databases per service. This architectural choice provides several benefits for a learning environment:
+
+**Benefits**:
+- **Simplified Operations**: Single database to manage, backup, and monitor
+- **ACID Transactions**: Cross-domain transactions without distributed transaction complexity
+- **Data Consistency**: Easier to maintain referential integrity across domains
+- **Development Efficiency**: Simpler local development setup and testing
+- **Cost Effective**: Single database instance reduces infrastructure costs
+
+**Implementation Strategy**:
+- **Schema-Based Separation**: `user_domain`, `product_domain`, `order_domain`, `shared_domain`
+- **Service-Specific Users**: Each service connects with its own database user for auditing
+- **Cross-Schema Permissions**: Controlled access to related domain data
+- **Coordinated Migrations**: Flyway manages schema evolution across all domains
+
+**Trade-offs Acknowledged**:
+- Services are more tightly coupled at the data layer
+- Requires discipline to avoid services directly accessing other domains' data
+- Schema changes require coordination across services
+- Scaling requires vertical scaling of the shared database
+
+This approach is well-suited for learning microservices patterns while maintaining operational simplicity.
+
 ---
 
 ## 🏗️ Phase 1: Foundation & Infrastructure ✅
@@ -37,7 +73,7 @@ A comprehensive microservices learning platform demonstrating modern enterprise 
 
 ### ✅ **Step 1.3: Infrastructure Stack**
 - [x] Create Docker Compose with all required services:
-  - [x] PostgreSQL with separate databases per service
+  - [x] PostgreSQL with shared database and schema-based domain separation
   - [x] MongoDB for user preferences and social data
   - [x] Redis for caching and session management
   - [x] RabbitMQ for message queuing
@@ -81,22 +117,32 @@ A comprehensive microservices learning platform demonstrating modern enterprise 
 - [ ] Define domain events for cross-service communication
 - [ ] Implement value objects and domain services
 
-### **Step 2.2: Database Layer Implementation**
-- [ ] **User Service Database Setup**:
-  - [ ] Create Flyway migration scripts for PostgreSQL
-  - [ ] Implement JPA entities with proper relationships
-  - [ ] Set up MongoDB repositories for user preferences
-  - [ ] Create database initialization data
-- [ ] **Product Service Database Setup**:
-  - [ ] Create Flyway migration scripts for product catalog
-  - [ ] Implement JPA entities for products and inventory
-  - [ ] Set up database indexes for performance
-  - [ ] Create sample product data
-- [ ] **Order Service Database Setup**:
-  - [ ] Create Flyway migration scripts for order processing
-  - [ ] Implement JPA entities for orders and payments
-  - [ ] Set up audit trail tables
-  - [ ] Create order status workflow tables
+### **Step 2.2: Shared Database Layer Implementation**
+- [ ] **Shared Database Design**:
+  - [ ] Design unified database schema with domain separation
+  - [ ] Create Flyway migration scripts for shared PostgreSQL database
+  - [ ] Implement schema-based logical separation (user_domain, product_domain, order_domain)
+  - [ ] Design cross-domain relationships and foreign keys
+- [ ] **User Domain Schema**:
+  - [ ] Create user_domain schema tables and relationships
+  - [ ] Implement JPA entities with schema annotation (@Table(schema="user_domain"))
+  - [ ] Set up MongoDB repositories for user preferences (separate database)
+  - [ ] Create user domain initialization data
+- [ ] **Product Domain Schema**:
+  - [ ] Create product_domain schema tables for catalog and inventory
+  - [ ] Implement JPA entities with proper schema mapping
+  - [ ] Set up database indexes for product search and performance
+  - [ ] Create sample product data and categories
+- [ ] **Order Domain Schema**:
+  - [ ] Create order_domain schema for order processing and payments
+  - [ ] Implement cross-schema relationships (orders → users, order_items → products)
+  - [ ] Set up audit trail tables in shared_domain schema
+  - [ ] Create order status workflow and state transition tables
+- [ ] **Shared Domain Schema**:
+  - [ ] Create shared lookup tables (countries, currencies, etc.)
+  - [ ] Implement audit and logging tables
+  - [ ] Create system configuration tables
+  - [ ] Set up cross-cutting concern tables (notifications, etc.)
 
 ### **Step 2.3: Repository Layer**
 - [ ] Implement Spring Data JPA repositories for each service

@@ -23,7 +23,10 @@ This project serves as a hands-on laboratory for exploring and understanding cur
 ### Backend Technologies
 - **Framework**: Spring Boot 3.x with Spring WebFlux
 - **Security**: OAuth 2.0, JWT, Social Login (Google, GitHub)
-- **Data**: Spring Data JPA (PostgreSQL), Spring Data MongoDB
+- **Data**: 
+  - **Primary**: Shared PostgreSQL database with schema-based domain separation
+  - **Secondary**: MongoDB for user preferences and social data
+  - **Migrations**: Flyway for coordinated schema management
 - **Resilience**: Resilience4j (Circuit Breaker, Bulkhead, Rate Limiter)
 - **Communication**: 
   - Sync: OpenFeign, Load Balancer
@@ -31,7 +34,6 @@ This project serves as a hands-on laboratory for exploring and understanding cur
 - **Caching**: Redis with Spring Cache
 - **Batch Processing**: Spring Batch
 - **API Documentation**: OpenAPI 3.0 (Swagger)
-- **Database Migrations**: Flyway
 
 ### Frontend Technologies
 - **Framework**: React 18 with TypeScript

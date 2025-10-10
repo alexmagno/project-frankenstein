@@ -1,26 +1,37 @@
--- Create databases for each microservice
-CREATE DATABASE user_service;
-CREATE DATABASE product_service;
-CREATE DATABASE order_service;
+-- Create shared database for all microservices
+CREATE DATABASE frankenstein_shared;
 CREATE DATABASE sonarqube;
 
--- Create users for each service (optional, for better security)
+-- Create users for each service (for security and auditing)
 CREATE USER user_service_user WITH ENCRYPTED PASSWORD 'userservice123';
 CREATE USER product_service_user WITH ENCRYPTED PASSWORD 'productservice123';
 CREATE USER order_service_user WITH ENCRYPTED PASSWORD 'orderservice123';
 
--- Grant privileges
-GRANT ALL PRIVILEGES ON DATABASE user_service TO user_service_user;
-GRANT ALL PRIVILEGES ON DATABASE product_service TO product_service_user;
-GRANT ALL PRIVILEGES ON DATABASE order_service TO order_service_user;
+-- Grant privileges on shared database
+GRANT ALL PRIVILEGES ON DATABASE frankenstein_shared TO user_service_user;
+GRANT ALL PRIVILEGES ON DATABASE frankenstein_shared TO product_service_user;  
+GRANT ALL PRIVILEGES ON DATABASE frankenstein_shared TO order_service_user;
 GRANT ALL PRIVILEGES ON DATABASE sonarqube TO frankenstein;
 
--- Connect to each database and create extensions if needed
-\c user_service;
+-- Connect to shared database and create extensions
+\c frankenstein_shared;
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+CREATE EXTENSION IF NOT EXISTS "pg_trgm"; -- For text search optimization
 
-\c product_service;
-CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+-- Create schemas for each service domain (logical separation)
+CREATE SCHEMA IF NOT EXISTS user_domain;
+CREATE SCHEMA IF NOT EXISTS product_domain;
+CREATE SCHEMA IF NOT EXISTS order_domain;
+CREATE SCHEMA IF NOT EXISTS shared_domain; -- For cross-domain entities
 
-\c order_service;
-CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+-- Grant schema permissions
+GRANT ALL ON SCHEMA user_domain TO user_service_user;
+GRANT USAGE ON SCHEMA user_domain TO product_service_user, order_service_user;
+
+GRANT ALL ON SCHEMA product_domain TO product_service_user;
+GRANT USAGE ON SCHEMA product_domain TO user_service_user, order_service_user;
+
+GRANT ALL ON SCHEMA order_domain TO order_service_user;
+GRANT USAGE ON SCHEMA order_domain TO user_service_user, product_service_user;
+
+GRANT ALL ON SCHEMA shared_domain TO user_service_user, product_service_user, order_service_user;
