@@ -1,7 +1,5 @@
 package com.frankenstein.user.application.commands;
 
-import lombok.Data;
-
 import java.util.UUID;
 
 /**
@@ -9,20 +7,38 @@ import java.util.UUID;
  * Commands represent the intent to change the system state.
  * They are handled by command handlers that interact with aggregates.
  */
-@Data
-public class RegisterUserCommand {
+public record RegisterUserCommand(
+    UUID userId,
+    String email,
+    String firstName,
+    String lastName,
+    String password
+) {
     
-    private final UUID userId;
-    private final String email;
-    private final String firstName;
-    private final String lastName;
-    private final String password;
+    /**
+     * Factory method to create a RegisterUserCommand with auto-generated user ID.
+     */
+    public static RegisterUserCommand create(String email, String firstName, String lastName, String password) {
+        return new RegisterUserCommand(
+            UUID.randomUUID(), // Generate new ID for registration
+            email,
+            firstName,
+            lastName,
+            password
+        );
+    }
     
-    public RegisterUserCommand(String email, String firstName, String lastName, String password) {
-        this.userId = UUID.randomUUID(); // Generate new ID for registration
-        this.email = email;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.password = password;
+    /**
+     * Custom toString to protect sensitive password information.
+     */
+    @Override
+    public String toString() {
+        return "RegisterUserCommand{" +
+                "userId=" + userId +
+                ", email='" + email + '\'' +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", password='[PROTECTED]'" +
+                '}';
     }
 }

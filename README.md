@@ -95,6 +95,7 @@ This project follows industry best practices and architectural patterns:
 - **12-Factor App**: Cloud-native application principles
 - **Event-Driven Architecture**: Loose coupling through async messaging
 - **CQRS**: Command Query Responsibility Segregation where applicable
+- **Modern Java**: Leveraging Java 17 Records for immutable data objects
 
 ## 📁 Project Structure
 
