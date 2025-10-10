@@ -200,9 +200,9 @@ public class VirtualThreadsExample {
             
             // All tasks completed successfully
             return "User data processed: " + 
-                   profileFuture.resultNow() + ", " +
-                   preferencesFuture.resultNow() + ", " +
-                   activityFuture.resultNow();
+                   profileFuture.get() + ", " +
+                   preferencesFuture.get() + ", " +
+                   activityFuture.get();
                    
         } catch (Exception e) {
             return "Failed to process user: " + e.getMessage();
