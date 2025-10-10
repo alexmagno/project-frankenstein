@@ -1,7 +1,7 @@
 version: '3.8'
 
 services:
-  # PostgreSQL Database
+  # PostgreSQL Database (Write Side)
   postgres:
     image: postgres:15-alpine
     container_name: frankenstein-postgres
@@ -9,13 +9,44 @@ services:
       POSTGRES_DB: frankenstein
       POSTGRES_USER: frankenstein
       POSTGRES_PASSWORD: frankenstein123
+      POSTGRES_REPLICATION_MODE: primary
+      POSTGRES_REPLICATION_USER: replicator
+      POSTGRES_REPLICATION_PASSWORD: replicator123
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./infrastructure/docker/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./infrastructure/docker/postgres/postgresql.conf:/etc/postgresql/postgresql.conf
+      - ./infrastructure/docker/postgres/pg_hba.conf:/etc/postgresql/pg_hba.conf
     networks:
       - frankenstein-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U frankenstein"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # PostgreSQL Read Replica (Analytics & Reporting)
+  postgres-read-replica:
+    image: postgres:15-alpine
+    container_name: frankenstein-postgres-replica
+    environment:
+      POSTGRES_DB: frankenstein
+      POSTGRES_USER: frankenstein
+      POSTGRES_PASSWORD: frankenstein123
+      POSTGRES_MASTER_SERVICE: postgres
+      POSTGRES_REPLICATION_MODE: replica
+      POSTGRES_REPLICATION_USER: replicator
+      POSTGRES_REPLICATION_PASSWORD: replicator123
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_replica_data:/var/lib/postgresql/data
+    networks:
+      - frankenstein-network
+    depends_on:
+      - postgres
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U frankenstein"]
       interval: 30s
@@ -271,6 +302,7 @@ services:
 
 volumes:
   postgres_data:
+  postgres_replica_data:
   mongodb_data:
   redis_data:
   rabbitmq_data:

@@ -405,10 +405,14 @@ CREATE TABLE snapshots (
 ### **Event Flow Architecture**
 
 ```
-Command → Write DB → Event → Kafka → Read Model Projector → Read DB
-   ↓         ↓         ↓       ↓              ↓              ↓
- User       PG      Event   Topic         MongoDB        Query
-Action    Tables   Store   Stream        Views         Response
+Command → Write DB → Event → Kafka → Read Model Projector → Multiple Read DBs
+   ↓         ↓         ↓       ↓              ↓                    ↓
+ User       PG      Event   Topic         ┌─MongoDB Views─────┐  Query
+Action    Tables   Store   Stream        │  (Flexible Schema) │ Response
+                              │          └────────────────────┘     ↑
+                              └──→  ┌─PG Read Replica + Mat Views─┐  │
+                                    │   (SQL Analytics/Reports)   │──┘
+                                    └─────────────────────────────┘
 ```
 
 ### **Technology Stack Updates**
@@ -420,9 +424,11 @@ Action    Tables   Store   Stream        Views         Response
 - **Events**: Spring ApplicationEvents + Kafka
 
 #### **Read Side Stack** 
-- **Database**: MongoDB (document-based views)
+- **Primary Read DB**: MongoDB (document-based views)
+- **Secondary Read DB**: PostgreSQL Read Replicas + Materialized Views
 - **ODM**: Spring Data MongoDB
 - **Projections**: Kafka Streams + Spring Kafka
+- **Analytics**: PostgreSQL with optimized reporting views
 - **Caching**: Redis for hot data
 
 #### **Event Infrastructure**
@@ -433,12 +439,58 @@ Action    Tables   Store   Stream        Views         Response
 
 ---
 
+### **Hybrid Read Side Strategy - Best of Both Worlds**
+
+For comprehensive learning, we're implementing **dual read-side strategies**:
+
+#### **🏗️ Architecture Overview**
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    WRITE SIDE (Commands)                        │
+│                 Shared PostgreSQL Database                      │
+├─────────────────┬─────────────────┬─────────────────┬───────────┤
+│  user_domain    │ product_domain  │  order_domain   │shared_dmn │
+└─────────────────┴─────────────────┴─────────────────┴───────────┘
+                                    │
+                            Event Stream (Kafka)
+                                    │
+                    ┌───────────────┼───────────────┐
+                    ▼               ▼               ▼
+         ┌─────────────────┐ ┌─────────────────┐ ┌─────────────────┐
+         │   MongoDB       │ │ PostgreSQL      │ │    Redis        │
+         │ Document Views  │ │ ReaRed plicas   │ │    Cache        │
+         │ (Flexible)      │ │ + Mat. Views    │ │  (Hot Data)     │
+         │                 │ │ (Analytics)     │ │                 │
+         └─────────────────┘ └─────────────────┘ └─────────────────┘
+```
+
+#### **📊 Use Case Allocation**
+
+| **Use Case** | **MongoDB** | **PostgreSQL Read Replica** | **Why** |
+|--------------|-------------|------------------------------|---------|
+| **User Profiles** | ✅ Primary | ❌ | Flexible nested data, frequent schema changes |
+| **Product Catalogs** | ✅ Primary | ❌ | Variable attributes, search-heavy |
+| **Order History** | ✅ Primary | ✅ Backup | MongoDB for UI, PG for reports |
+| **Real-time Dashboards** | ✅ Primary | ❌ | Fast aggregations, flexible views |
+| **Financial Reports** | ❌ | ✅ Primary | Complex SQL joins, regulatory compliance |
+| **Business Analytics** | ❌ | ✅ Primary | Cross-domain queries, data warehousing |
+| **Audit Reports** | ❌ | ✅ Primary | SQL reporting tools, compliance |
+| **Search & Filtering** | ✅ Primary | ❌ | Text search, faceted search |
+
+#### **🎯 Learning Benefits**
+
+1. **Multiple Patterns**: Experience both document and relational read models
+2. **Use Case Optimization**: Learn when to choose each approach
+3. **Performance Comparison**: Benchmark both strategies
+4. **Operational Complexity**: Understand trade-offs of multiple data stores
+5. **Real-world Relevance**: Many enterprises use hybrid approaches
+
 ## 💡 **Key Takeaways**
 
-1. **No Perfect Solution**: Both approaches have valid trade-offs
+1. **Hybrid Approach**: Combining multiple read strategies for different use cases
 2. **Context Matters**: The best choice depends on your specific situation
-3. **Evolution is Possible**: You can start with one approach and evolve
-4. **Learning First**: For educational projects, simplicity often wins
-5. **Measure and Adapt**: Use real metrics to guide architectural decisions
+3. **Learning First**: Educational projects benefit from experiencing multiple patterns
+4. **Performance Trade-offs**: Each approach excels in different scenarios
+5. **Operational Complexity**: More databases = more complexity but richer learning
 
-The shared database approach for Project Frankenstein allows us to focus on learning microservices patterns, implementing comprehensive features, and understanding the full ecosystem while maintaining operational simplicity. This pragmatic choice aligns with our educational goals while still demonstrating enterprise-ready patterns and practices.
+The hybrid read-side approach for Project Frankenstein maximizes learning opportunities while demonstrating real-world architectural decisions. This comprehensive strategy shows how enterprises often combine multiple data storage strategies to optimize for different use cases.

@@ -128,12 +128,19 @@ This approach is well-suited for learning microservices patterns while maintaini
     - [ ] Create snapshots table for performance optimization
     - [ ] Implement event versioning and metadata structure
     - [ ] Set up event indexing and partitioning strategies
-- [ ] **Read Side (Query) - MongoDB Setup**:
-  - [ ] Design denormalized MongoDB collections for optimal read performance
-  - [ ] Create user_views collection with aggregated user data
-  - [ ] Create product_views collection with inventory and category data
-  - [ ] Create order_views collection with order history and analytics
-  - [ ] Set up MongoDB indexes for query optimization
+- [ ] **Read Side (Query) - Dual Strategy Setup**:
+  - [ ] **MongoDB (Primary Read DB)**:
+    - [ ] Design denormalized MongoDB collections for optimal read performance
+    - [ ] Create user_views collection with aggregated user data
+    - [ ] Create product_views collection with inventory and category data
+    - [ ] Create order_views collection with order history and analytics
+    - [ ] Set up MongoDB indexes for query optimization
+  - [ ] **PostgreSQL Read Replicas (Analytics & Reporting)**:
+    - [ ] Configure PostgreSQL read replicas for reporting workloads
+    - [ ] Create materialized views for business analytics
+    - [ ] Set up financial reporting views with complex joins
+    - [ ] Implement audit and compliance reporting structures
+    - [ ] Configure automated refresh strategies for materialized views
 - [ ] **Domain Schemas (Write Side)**:
   - [ ] **User Domain**: Create user_domain schema tables and relationships
   - [ ] **Product Domain**: Create product_domain schema for catalog and inventory
@@ -151,11 +158,17 @@ This approach is well-suited for learning microservices patterns while maintaini
   - [ ] Create event store repository for event persistence
   - [ ] Implement snapshot repository for performance optimization
   - [ ] Create aggregate repository pattern for domain objects
-- [ ] **Query Side Repositories (MongoDB)**:
-  - [ ] Implement Spring Data MongoDB repositories for read operations
-  - [ ] Create view-specific repositories (UserViewRepository, ProductViewRepository)
-  - [ ] Implement custom query methods with MongoDB aggregation
-  - [ ] Set up pagination and sorting for read operations
+- [ ] **Query Side Repositories (Dual Strategy)**:
+  - [ ] **MongoDB Repositories**:
+    - [ ] Implement Spring Data MongoDB repositories for flexible read operations
+    - [ ] Create view-specific repositories (UserViewRepository, ProductViewRepository)
+    - [ ] Implement custom query methods with MongoDB aggregation
+    - [ ] Set up pagination and sorting for UI operations
+  - [ ] **PostgreSQL Read Replica Repositories**:
+    - [ ] Implement JPA repositories pointing to read replicas
+    - [ ] Create reporting-specific repository interfaces
+    - [ ] Implement complex analytical queries with native SQL
+    - [ ] Set up materialized view refresh repository operations
 - [ ] **Repository Integration Testing**:
   - [ ] TestContainers for PostgreSQL integration tests
   - [ ] TestContainers for MongoDB integration tests
@@ -170,15 +183,27 @@ This approach is well-suited for learning microservices patterns while maintaini
   - [ ] Implement command validation and business rule enforcement
   - [ ] Event publishing after successful command execution
 - [ ] **Query Handlers (Read Side)**:
-  - [ ] **User Queries**: UserProfileQuery, UserActivityQuery, UserSearchQuery
-  - [ ] **Product Queries**: ProductCatalogQuery, InventoryQuery, CategoryTreeQuery
-  - [ ] **Order Queries**: OrderHistoryQuery, OrderDetailsQuery, PaymentSummaryQuery
-  - [ ] Implement complex aggregation queries using MongoDB
+  - [ ] **MongoDB Query Handlers (UI-focused)**:
+    - [ ] **User Queries**: UserProfileQuery, UserActivityQuery, UserSearchQuery
+    - [ ] **Product Queries**: ProductCatalogQuery, InventoryQuery, CategoryTreeQuery
+    - [ ] **Order Queries**: OrderHistoryQuery, OrderDetailsQuery, PaymentSummaryQuery
+    - [ ] Implement complex aggregation queries using MongoDB
+  - [ ] **PostgreSQL Read Replica Query Handlers (Analytics-focused)**:
+    - [ ] **Financial Queries**: RevenueReportQuery, ProfitAnalysisQuery, TaxReportQuery
+    - [ ] **Business Intelligence**: CustomerAnalyticsQuery, SalesMetricsQuery
+    - [ ] **Audit Queries**: ComplianceReportQuery, AuditTrailQuery
+    - [ ] **Cross-domain Analytics**: CustomerLifetimeValueQuery, InventoryTurnoverQuery
 - [ ] **Event Projectors**:
-  - [ ] UserEventProjector for updating user_views collection
-  - [ ] ProductEventProjector for updating product_views collection
-  - [ ] OrderEventProjector for updating order_views collection
-  - [ ] Implement idempotent projection handling
+  - [ ] **MongoDB Projectors**:
+    - [ ] UserEventProjector for updating user_views collection
+    - [ ] ProductEventProjector for updating product_views collection
+    - [ ] OrderEventProjector for updating order_views collection
+    - [ ] Implement idempotent projection handling
+  - [ ] **PostgreSQL Materialized View Projectors**:
+    - [ ] AnalyticsEventProjector for refreshing reporting views
+    - [ ] FinancialEventProjector for updating financial materialized views
+    - [ ] AuditEventProjector for compliance and audit trail views
+    - [ ] Implement incremental refresh strategies
 - [ ] **Domain Event Implementation**:
   - [ ] Define domain events for each aggregate (UserRegistered, ProductCreated, OrderPlaced)
   - [ ] Implement event versioning and backward compatibility
