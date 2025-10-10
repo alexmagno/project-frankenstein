@@ -74,8 +74,8 @@ This approach is well-suited for learning microservices patterns while maintaini
 
 ### ✅ **Step 1.3: Infrastructure Stack**
 - [x] Create Docker Compose with all required services:
-  - [x] PostgreSQL with shared database and schema-based domain separation
-  - [x] MongoDB for user preferences and social data
+  - [x] PostgreSQL with shared database and schema-based domain separation (write side)
+  - [x] MongoDB for denormalized read models and query optimization (read side)
   - [x] Redis for caching and session management
   - [x] RabbitMQ for message queuing
   - [x] Apache Kafka + Zookeeper for event streaming
