@@ -222,7 +222,40 @@ This approach is well-suited for learning microservices patterns while maintaini
 - [ ] REST API tests with MockMvc
 - [ ] Security tests for authentication/authorization
 
-### **Step 2.9: Application Configuration**
+### **Step 2.9: Java 21 Modern Features Integration**
+- [ ] **Record Patterns in Real Scenarios**:
+  - [ ] Replace traditional DTOs with records for API request/response objects
+  - [ ] Implement pattern matching in validation and transformation logic
+  - [ ] Use record patterns for complex event processing and data extraction
+  - [ ] Apply record patterns in error handling and response mapping
+- [ ] **Virtual Threads for High-Concurrency Operations**:
+  - [ ] Replace traditional thread pools with virtual thread executors for I/O operations
+  - [ ] Implement bulk user registration processing with virtual threads
+  - [ ] Use virtual threads for concurrent external API calls (email, notifications)
+  - [ ] Apply virtual threads to batch order processing and inventory updates
+- [ ] **Structured Concurrency for Business Workflows**:
+  - [ ] Implement user onboarding workflows with structured concurrency (profile creation + email verification + preferences setup)
+  - [ ] Use structured concurrency for order processing (inventory check + payment + shipping)
+  - [ ] Apply structured concurrency to data aggregation scenarios (user profile + preferences + activity)
+  - [ ] Implement fail-fast workflows with structured concurrency error handling
+- [ ] **String Templates for Secure Operations**:
+  - [ ] Replace string concatenation in SQL queries with string templates (where not using JPA)
+  - [ ] Use string templates for secure log message formatting
+  - [ ] Apply string templates to dynamic API response generation
+  - [ ] Implement string templates for email/notification template processing
+- [ ] **Sequenced Collections for Ordered Processing**:
+  - [ ] Use sequenced collections for order item processing (maintain insertion order)
+  - [ ] Apply sequenced collections to audit trail and event history
+  - [ ] Implement sequenced collections for cache invalidation ordering
+  - [ ] Use sequenced collections for workflow step processing
+- [ ] **Sealed Classes for Domain Modeling**:
+  - [ ] Replace enum-based state machines with sealed class hierarchies
+  - [ ] Implement payment method types using sealed classes (CreditCard, PayPal, BankTransfer)
+  - [ ] Use sealed classes for order status progression (Pending, Processing, Shipped, Delivered, Cancelled)
+  - [ ] Apply sealed classes to user role hierarchies (Customer, Admin, Moderator)
+  - [ ] Implement API response types with sealed classes (Success, Error, ValidationError)
+
+### **Step 2.10: Application Configuration**
 - [ ] Configure application properties for each environment
 - [ ] Set up logging configuration with Logback
 - [ ] Configure actuator endpoints for health checks
@@ -235,6 +268,13 @@ This approach is well-suited for learning microservices patterns while maintaini
 - Basic security is functional
 - Unit test coverage exceeds 80%
 - APIs are documented and accessible via Swagger UI
+- **Java 21 Features Integration**:
+  - Record patterns replace traditional DTOs and improve pattern matching
+  - Virtual threads handle high-concurrency scenarios efficiently
+  - Structured concurrency coordinates complex business workflows
+  - String templates provide secure string operations
+  - Sequenced collections maintain ordered data processing
+  - Sealed classes provide type-safe domain modeling and state machines
 
 ---
 
@@ -337,12 +377,18 @@ This approach is well-suited for learning microservices patterns while maintaini
 - [ ] Add data tables with sorting/filtering/pagination
 - [ ] Create forms with validation
 
-### **Step 4.5: WebFlux Implementation**
+### **Step 4.5: WebFlux Implementation with Java 21**
 - [ ] Convert critical endpoints to Spring WebFlux
 - [ ] Implement reactive repositories
 - [ ] Create reactive service layers
 - [ ] Set up Server-Sent Events for real-time updates
 - [ ] Implement backpressure handling
+- [ ] **Java 21 Integration**:
+  - [ ] Use virtual threads with WebFlux for hybrid reactive/imperative code
+  - [ ] Apply record patterns for reactive data transformation pipelines
+  - [ ] Implement structured concurrency for coordinating multiple reactive streams
+  - [ ] Use string templates for dynamic reactive response generation
+  - [ ] Apply sealed classes for reactive stream event types and response hierarchies
 
 ### **Step 4.6: Advanced Caching**
 - [ ] Implement multi-level caching strategy
@@ -478,17 +524,17 @@ This approach is well-suited for learning microservices patterns while maintaini
   - [ ] Set up historical reporting and analytics
   - [ ] Implement temporal data compliance features
 
-### **Step 6.3: Complex Event Processing (CEP)**
+### **Step 6.3: Complex Event Processing (CEP) with Java 21**
 - [ ] **Kafka Streams Advanced Patterns**:
-  - [ ] Implement event correlation across multiple streams
-  - [ ] Create sliding window aggregations for real-time metrics
-  - [ ] Set up complex event pattern detection
-  - [ ] Implement stream joins for cross-domain analytics
+  - [ ] Implement event correlation across multiple streams using record patterns
+  - [ ] Create sliding window aggregations for real-time metrics with virtual threads
+  - [ ] Set up complex event pattern detection using pattern matching
+  - [ ] Implement stream joins for cross-domain analytics with structured concurrency
 - [ ] **Business Process Management**:
-  - [ ] Implement long-running business processes with events
-  - [ ] Create process orchestration with event choreography
-  - [ ] Set up process monitoring and error handling
-  - [ ] Implement process compensation and rollback
+  - [ ] Implement long-running business processes with events using virtual threads
+  - [ ] Create process orchestration with event choreography and record patterns
+  - [ ] Set up process monitoring and error handling with structured concurrency
+  - [ ] Implement process compensation and rollback using pattern matching
 
 ### **Step 6.4: Event-Driven Sagas & Distributed Transactions**
 - [ ] **Saga Pattern Implementation**:
@@ -509,22 +555,23 @@ This approach is well-suited for learning microservices patterns while maintaini
 - [ ] Configure message routing with complex binding patterns
 - [ ] Implement priority queues for critical messages
 
-### **Step 6.6: Real-time Event Streaming**
+### **Step 6.6: Real-time Event Streaming with Java 21**
 - [ ] **WebSocket Integration**:
-  - [ ] Implement WebSocket connections for real-time event streaming
-  - [ ] Create user-specific event subscriptions
-  - [ ] Set up event filtering and transformation for clients
-  - [ ] Implement connection management and scalability
+  - [ ] Implement WebSocket connections for real-time event streaming using virtual threads
+  - [ ] Create user-specific event subscriptions with record patterns for filtering
+  - [ ] Set up event filtering and transformation for clients using pattern matching
+  - [ ] Implement connection management and scalability with structured concurrency
 - [ ] **Server-Sent Events (SSE)**:
-  - [ ] Create SSE endpoints for order status updates
-  - [ ] Implement inventory change notifications
-  - [ ] Set up system health and monitoring streams
-  - [ ] Create real-time dashboard feeds
+  - [ ] Create SSE endpoints for order status updates using virtual threads
+  - [ ] Implement inventory change notifications with record patterns
+  - [ ] Set up system health and monitoring streams with string templates
+  - [ ] Create real-time dashboard feeds using sequenced collections for ordered updates
 - [ ] **Push Notifications**:
-  - [ ] Integrate with mobile push notification services
-  - [ ] Create email notification triggers from events
-  - [ ] Implement SMS notifications for critical events
-  - [ ] Set up notification preference management
+  - [ ] Integrate with mobile push notification services using virtual threads
+  - [ ] Create email notification triggers from events with string templates
+  - [ ] Implement SMS notifications for critical events using structured concurrency
+  - [ ] Set up notification preference management with record patterns
+  - [ ] Use sealed classes for notification types and delivery status hierarchies
 
 **Success Criteria**:
 - Events are published and consumed reliably
@@ -814,6 +861,13 @@ By completing this project, you will have hands-on experience with:
 - Database design and migration strategies
 - Caching strategies and implementation
 - Security patterns and OAuth2 implementation
+- **Modern Java 21 LTS Features**:
+  - Record patterns for cleaner data modeling and pattern matching
+  - Virtual threads for massive concurrency and I/O performance
+  - Structured concurrency for coordinated parallel processing
+  - String templates for secure and readable string operations
+  - Sequenced collections for predictable data ordering
+  - Sealed classes for type-safe domain hierarchies and state machines
 
 ### **Infrastructure & DevOps**
 - Docker containerization and orchestration
