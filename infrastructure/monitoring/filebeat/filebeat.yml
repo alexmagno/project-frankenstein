@@ -1,0 +1,31 @@
+# Only collect logs from Frankenstein services
+filebeat.autodiscover:
+  providers:
+    - type: docker
+      templates:
+        - condition:
+            contains:
+              docker.container.name: "frankenstein-"
+          config:
+            - type: container
+              paths:
+                - "/var/lib/docker/containers/${data.docker.container.id}/*.log"
+              processors:
+                - add_docker_metadata: ~
+
+# Send to Logstash
+output.logstash:
+  hosts: ["logstash:5044"]
+
+# Disable Elasticsearch output
+output.elasticsearch:
+  enabled: false
+
+# Basic logging
+logging.level: info
+logging.to_files: true
+logging.files:
+  path: /usr/share/filebeat/logs
+  name: filebeat
+  keepfiles: 7
+  permissions: 0644

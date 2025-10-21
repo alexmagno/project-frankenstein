@@ -1,0 +1,10 @@
+# LocalStack specific files - never commit these
+*.key
+*.pem
+
+# AWS credentials
+.aws/
+credentials
+./setup-env.sh
+
+# Note: Environment files (.env.*) are now in project root

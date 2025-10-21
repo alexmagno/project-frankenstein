@@ -1,292 +1,321 @@
-# Project Frankenstein 🧪
+# Project Frankenstein 👨‍💻
 
-A comprehensive microservices learning platform demonstrating modern enterprise architecture patterns and technologies.
-
-## 🎯 Project Overview
+> **A Comprehensive Microservices Learning Platform**
 
 This project serves as a hands-on laboratory for exploring and understanding current tech stacks used in modern enterprise applications. It implements a complete microservices ecosystem with all the bells and whistles you'd expect in production systems.
 
-## 🏗️ Architecture Overview
+## 🎯 What You'll Learn
 
-### Core Services
-- **User Service** - User management, authentication, profiles
-- **Product Service** - Product catalog, inventory management  
-- **Order Service** - Order processing, payment integration
-- **Frontend Service** - React application with modern UI
+### Modern Architecture Patterns
+- **Microservices Architecture** with proper service boundaries
+- **Event-Driven Architecture** with messaging and event sourcing
+- **CQRS (Command Query Responsibility Segregation)** for scalable reads/writes
+- **SAGA Pattern** for distributed transactions
+- **Domain-Driven Design (DDD)** with rich domain models
+- **Clean Architecture** principles with hexagonal architecture
 
-### AWS Lambda Services
-- **Notification Service** (SAM) - Email/SMS notifications via SQS
-- **Analytics Service** (Terraform) - Data processing and reporting
+### Technology Stack
 
-## 🚀 Technology Stack
+### Backend (Java 21 LTS)
+- **Spring Boot 3.2+** (Web, Data, Security, Cloud)
+- **Spring Cloud** (Config, Gateway, Circuit Breaker)
+- **PostgreSQL 18** (with UUID v7 support)
+- **MongoDB** (Document store for read models)
+- **Redis** (Caching and session management)
+- **Apache Kafka** + **RabbitMQ** (Event streaming and messaging)
 
-### Backend Technologies
-- **Framework**: Spring Boot 3.x with Spring WebFlux
-- **Security**: OAuth 2.0, JWT, Social Login (Google, GitHub)
-- **Architecture**: CQRS (Command Query Responsibility Segregation) + Event Sourcing
-- **Data Architecture**: 
-  - **Write Side (Commands)**: Shared PostgreSQL with schema separation + Event Store
-  - **Read Side (Queries)**: MongoDB with optimized document views
-  - **Event Streaming**: Apache Kafka for event-driven projections
-  - **Migrations**: Flyway for PostgreSQL schema management
-- **Resilience**: Resilience4j (Circuit Breaker, Bulkhead, Rate Limiter)
-- **Communication**: 
-  - Sync: OpenFeign, Load Balancer
-  - Async: RabbitMQ, Apache Kafka, Event Sourcing
-- **Caching**: Redis with Spring Cache
-- **Batch Processing**: Spring Batch
-- **API Documentation**: OpenAPI 3.0 (Swagger)
-
-### Frontend Technologies
-- **Framework**: React 18 with TypeScript
-- **State Management**: Redux Toolkit
-- **UI Library**: Material-UI / Ant Design
-- **Authentication**: OAuth 2.0 integration
-- **Feature Flags**: Unleash (self-hosted) for feature toggles and A/B testing
+### Frontend (Next.js 14+)
+- **React 18** with modern hooks and context
+- **TypeScript** for type safety
+- **Next.js App Router** with SSR/SSG capabilities
+- **Tailwind CSS** for styling
+- **Redux Toolkit** for state management
 
 ### Infrastructure & DevOps
-- **Containerization**: Docker & Docker Compose
-- **Orchestration**: Kubernetes (local with kind/minikube)
-- **Service Mesh**: Istio
-- **Package Management**: Helm Charts
-- **Service Discovery**: Spring Cloud Eureka
-- **Configuration**: Spring Cloud Config Server
-- **API Gateway**: Spring Cloud Gateway
+- **Docker** + **Docker Compose** (Containerization)
+- **Kubernetes** + **Helm** (Orchestration)
+- **Terraform** (Infrastructure as Code)
+- **GitHub Actions** (CI/CD)
+- **Prometheus** + **Grafana** (Metrics and dashboards)
+- **Jaeger** (Distributed tracing)
+- **ELK Stack** (Centralized logging)
+- **SonarQube** (Code quality)
 
-### Cloud & AWS Services
-- **AWS Simulation**: LocalStack
-- **Functions**: AWS Lambda (SAM & Terraform)
-- **Messaging**: Amazon SQS
-- **Infrastructure as Code**: Terraform, SAM CLI
+### Cloud & AWS
+- **AWS Lambda** (Serverless functions)
+- **LocalStack** (AWS services simulation)
+- **S3** (Object storage)
+- **SQS** (Message queuing)
+- **EventBridge** (Event routing)
+- **DynamoDB** (NoSQL database)
 
-### Observability & Monitoring
-- **Metrics**: Prometheus + Grafana
-- **Distributed Tracing**: Jaeger with OpenTelemetry
-- **Logging**: ELK Stack (Elasticsearch, Logstash, Kibana)
-- **APM**: Custom metrics and spans
+### Testing & Quality
+- **JUnit 5** + **TestContainers** (Integration testing)
+- **Cucumber** (Behavior-driven development)
+- **JMeter/Gatling** (Performance testing)
+- **OWASP Dependency Check** (Security scanning)
+- **JaCoCo** (Code coverage - 80% target)
 
-### Testing Strategy
-- **Unit Tests**: JUnit 5, Mockito (80%+ coverage)
-- **Integration Tests**: TestContainers, WireMock
-- **Behavioral Tests**: Cucumber
-- **End-to-End Tests**: Selenium/Cypress
-- **Performance Tests**: JMeter/Gatling
-- **Contract Tests**: Spring Cloud Contract
-
-### Code Quality & Security
-- **Static Analysis**: SonarQube
-- **Security Scanning**: OWASP Dependency Check
+### Modern Practices
+- **GitOps** workflow with feature branches
 - **Code Formatting**: Prettier, ESLint
 - **Architecture Compliance**: ArchUnit
 
 ### CI/CD Pipeline
 - **Platform**: GitHub Actions
-- **Environments**: Development, Staging, Production
+- **Environments**: Dev, Staging, Prod
 - **Strategies**: Blue-Green, Canary Deployments
 - **Quality Gates**: Automated testing, security scans
 
 ## 🏛️ Architecture Principles
 
-This project follows industry best practices and architectural patterns:
+This project demonstrates **both architectural approaches** with their trade-offs:
 
-- **Clean Architecture**: Clear separation of concerns with hexagonal architecture
-- **Domain-Driven Design (DDD)**: Rich domain models with bounded contexts
-- **SOLID Principles**: Maintainable and extensible code
-- **12-Factor App**: Cloud-native application principles
-- **Event-Driven Architecture**: Loose coupling through async messaging
-- **CQRS**: Command Query Responsibility Segregation where applicable
-- **Modern Java 21**: Leveraging latest LTS features including Records, Virtual Threads, Pattern Matching, and String Templates
+### **Microservices Architecture**
+- **Database Per Service**: Each microservice owns its data with PostgreSQL 18
+- **Distributed Communication**: HTTP/REST APIs and messaging between services
+- **Independent Deployment**: Services can be deployed separately
+- **Technology Diversity**: Each service can use different tech stacks
+- **Fault Isolation**: Service failures don't cascade
 
-## 📁 Project Structure
+### **Modular Monolith Architecture (BFF Service)**
+- **Shared Database**: Single database with module-specific schemas
+- **Internal Communication**: Direct Java imports and Spring Events
+- **Single Deployment**: All modules deployed together
+- **Consistent Technology**: Unified tech stack across modules
+- **ACID Transactions**: Cross-module transactions within single JVM
+
+### **Common Patterns (Both Architectures)**
+- **Event Sourcing**: Complete audit trail and event replay capabilities
+- **CQRS**: Separate read/write models for optimal performance
+- **SAGA Coordination**: Distributed transaction management
+- **Clean Architecture**: Dependency inversion and testable code
+- **Security First**: Multi-authentication (Basic, JWT, OAuth2)
+- **Observability**: Comprehensive metrics, tracing, and logging
+- **Resilience**: Circuit breakers, retry policies, bulkhead isolation
+
+## 🏗️ Project Structure
 
 ```
 project-frankenstein/
 ├── services/
-│   ├── user-service/           # User management & authentication
-│   ├── product-service/        # Product catalog & inventory
-│   ├── order-service/          # Order processing & payments
-│   └── frontend-service/       # React application
+│   ├── user-service/           # User management and authentication (Microservice)
+│   ├── inventory-service/      # Product catalog and stock management (Microservice)
+│   ├── order-service/          # Order processing and fulfillment (Microservice)
+│   ├── payment-service/        # Payment processing and external integrations (Clean Architecture)
+│   ├── notification-service/   # Multi-channel notifications (Traditional MVC Architecture)
+│   ├── bff-service/           # **Modular Monolith** - Frontend aggregation with internal modules
+│   │   ├── user-aggregation/   # User data aggregation and caching (internal module)
+│   │   ├── order-aggregation/  # Order data aggregation and workflow (internal module)  
+│   │   ├── inventory-aggregation/ # Product catalog aggregation (internal module)
+│   │   └── analytics-aggregation/ # Cross-service analytics (internal module)
+│   ├── frontend-service/       # Next.js React application (Phase 4)
+│   ├── realtime-service/      # WebSocket and real-time features (Phase 6)
+│   ├── video-processing-ec2-service/    # Video processing on EC2 (Phase 7)
+│   └── video-processing-fargate-service/ # Serverless video processing (Phase 7)
 ├── aws-services/
-│   ├── notification-lambda/    # SAM-based notification service
-│   └── analytics-lambda/       # Terraform-based analytics service
+│   ├── analytics-lambda/      # AWS Lambda functions (Phase 7)
+│   ├── notification-lambda/   # Notification processing (Phase 7)
+│   └── operations-lambda/     # Operational tasks (Phase 7)
 ├── infrastructure/
-│   ├── docker/                 # Docker configurations
-│   ├── kubernetes/             # K8s manifests and Helm charts
-│   ├── terraform/              # Infrastructure as Code
-│   ├── monitoring/             # Prometheus, Grafana configs
-│   └── service-mesh/           # Istio configurations
+│   ├── docker/               # Database initialization and configs
+│   ├── kubernetes/           # K8s manifests and Helm charts
+│   ├── localstack/          # AWS services simulation + secrets management
+│   ├── terraform/           # Infrastructure as Code
+│   ├── monitoring/          # Prometheus, Grafana configs
+│   └── service-mesh/        # Istio configurations
 ├── config/
-│   ├── spring-cloud-config/    # Centralized configuration
-│   ├── dev/                    # Development environment
-│   ├── staging/                # Staging environment
-│   └── prod/                   # Production environment
+│   ├── spring-cloud-config/  # Centralized configuration (Phase 3)
+│   ├── dev/                  # Dev environment
+│   ├── staging/              # Staging environment  
+│   └── prod/                 # Prod environment
 ├── scripts/
-│   ├── setup/                  # Environment setup scripts
-│   ├── deployment/             # Deployment automation
-│   └── testing/                # Test execution scripts
+│   ├── setup/               # Environment setup scripts
+│   ├── deployment/          # Deployment automation
+│   └── testing/             # Test execution scripts
 ├── docs/
-│   ├── architecture/           # Architecture documentation
-│   ├── api/                    # API documentation
-│   └── deployment/             # Deployment guides
-└── .github/
-    └── workflows/              # CI/CD pipelines
+│   ├── api/                 # API documentation
+│   ├── architecture/        # Architecture decision records
+│   └── deployment/          # Deployment guides
+└── README.md
 ```
 
-## 🚀 Quick Start
-
-### Prerequisites
-- Docker & Docker Compose
-- Kubernetes (kind/minikube)
-- **Java 21** (LTS) - Required for latest features
-- Node.js 18+
-- Helm 3
-- AWS CLI (for LocalStack)
+## 🚀 Getting Started
 
 ### Local Development Setup
 
-1. **Clone and Setup**
-   ```bash
-   git clone <repository-url>
-   cd project-frankenstein
-   chmod +x scripts/setup/dev-setup.sh
-   ./scripts/setup/dev-setup.sh
-   ```
+1. **Prerequisites**: Docker, Docker Compose, Java 21, Maven, Node.js 18+
 
-2. **Start Infrastructure**
-   ```bash
-   docker-compose up -d postgres mongodb redis rabbitmq kafka localstack
-   ```
+2. **Environment Setup** (Required):
+```bash
+# 1. Create environment secrets
+cd infrastructure/localstack
+./setup-env.sh dev        # Creates secrets.dev.env
+# Edit secrets.dev.env and replace CHANGE_ME values with real passwords
 
-3. **Build and Run Services**
-   ```bash
-   # Build all services
-   mvn clean install
+# 2. Start project with environment
+cd ../..
+./scripts/start-with-env.sh dev
+```
 
-   # Run specific service
-   mvn spring-boot:run -pl services/user-service
-   mvn spring-boot:run -pl services/product-service
-   mvn spring-boot:run -pl services/order-service
-   mvn spring-boot:run -pl config/spring-cloud-config
-   ```
 
-4. **Deploy to Kubernetes**
-   ```bash
-   kubectl apply -f infrastructure/kubernetes/namespace.yaml
-   helm install frankenstein-stack infrastructure/kubernetes/helm/
-   ```
+4. **Load Secrets into LocalStack**:
+```bash
+cd infrastructure/localstack
+./secrets-setup.sh dev
+```
 
-5. **Access Applications**
-   - Frontend: http://localhost:3000
-   - API Gateway: http://localhost:8080
-   - Config Server: http://localhost:8888
-   - Unleash (Feature Flags): http://localhost:4242
-   - Grafana: http://localhost:3001
-   - Kibana: http://localhost:5601
+## 🔐 Environment Management
 
-## 📊 Monitoring & Observability
+**Environment-specific secrets** are managed securely:
 
-- **Application Metrics**: http://localhost:3001 (Grafana)
-- **Distributed Tracing**: http://localhost:16686 (Jaeger)
-- **Logs**: http://localhost:5601 (Kibana)
-- **API Documentation**: http://localhost:8080/swagger-ui.html
+### Create Environment Files:
+```bash
+cd infrastructure/localstack
+./setup-env.sh dev      # Development environment
+./setup-env.sh staging  # Staging environment
+./setup-env.sh prod     # Production environment
+```
 
-## 🧪 Testing
+### Start with Specific Environment:
+```bash
+./scripts/start-with-env.sh dev      # Development
+./scripts/start-with-env.sh staging  # Staging  
+./scripts/start-with-env.sh prod     # Production
+```
 
+### Security Features:
+- ✅ **No hardcoded secrets** in committed code
+- ✅ **Environment separation** (dev/staging/prod)
+- ✅ **Automatic .env gitignore** protection
+- ✅ **Strong password generation** guidance
+
+## 🧪 Development
+
+### Building
+```bash
+# Build all services
+mvn clean compile
+
+# Build specific service
+cd services/user-service
+mvn clean compile
+```
+
+### Testing
 ```bash
 # Run all tests
 mvn test
 
-# Run specific test suites
-mvn test -Dtest="*UnitTest"
-mvn test -Dtest="*IntegrationTest"
+# Run with coverage
+mvn test jacoco:report
+```
 
-# Run integration tests
-mvn verify -P integration-tests
+### Code Quality
+```bash
+# Run SonarQube analysis
+mvn sonar:sonar
 
-# Run behavioral tests
-mvn test -Dtest="*CucumberTest"
-
-# Generate coverage report
-mvn jacoco:report
-
-# Check coverage
+# Check coverage threshold
 mvn jacoco:check
 ```
 
 ## 🚀 Deployment
 
-### Development
+### Dev
 ```bash
-./scripts/deployment/deploy-dev.sh
+./scripts/start-with-env.sh dev
 ```
 
 ### Staging
 ```bash
-./scripts/deployment/deploy-staging.sh
+./scripts/start-with-env.sh staging
 ```
 
-### Production
+### Prod  
 ```bash
-./scripts/deployment/deploy-prod.sh
+./scripts/start-with-env.sh prod
 ```
 
 ## 📚 Learning Objectives
 
-By working through this project, you'll gain hands-on experience with:
+By completing this project, you will gain hands-on experience with:
 
-1. **Microservices Architecture**: Service decomposition, inter-service communication
-2. **Spring Ecosystem**: Boot, Cloud, Security, Data, WebFlux
-3. **Containerization**: Docker, Kubernetes, Helm
-4. **Message-Driven Architecture**: RabbitMQ, Kafka, Event Sourcing
-5. **Observability**: Metrics, Tracing, Logging, APM
-6. **DevOps Practices**: CI/CD, Infrastructure as Code, Monitoring
-7. **Cloud-Native Patterns**: Service Mesh, Configuration Management
-8. **Testing Strategies**: Unit, Integration, Contract, E2E testing
-9. **Security**: OAuth, JWT, OWASP compliance
-10. **Performance**: Caching, Rate Limiting, Load Balancing
+### Backend Development
+- Spring Boot ecosystem and microservices patterns
+- **Clean Architecture vs Traditional MVC comparison**
+- **Modular monolith architecture with internal modules**
+- **Direct imports vs HTTP communication trade-offs**
+- **Internal messaging with Spring Events**
+- **Layered architecture patterns and dependency management**
+- Event-driven architecture and messaging (external and internal)
+- Database design with PostgreSQL 18 and UUID v7
+- CQRS and Event Sourcing implementation
+- **Distributed transactions with SAGA and Two-Phase Commit (2PC) patterns**
+- **Transaction consistency vs performance trade-offs**
+- Multi-authentication strategies (Basic, JWT, OAuth2)
 
-## 🤝 Contributing
+### Infrastructure & DevOps
+- **Docker containerization** of Spring Boot services
+- Container orchestration with Docker Compose
+- **Infrastructure as Code comparison (AWS CDK vs Terraform vs SAM)**
+- **AWS CDK for complex video processing infrastructure**
+- CI/CD pipeline design and automation
+- Comprehensive monitoring and observability
 
-This is a learning project! Feel free to:
-- Add new features or services
-- Experiment with different technologies
-- Improve documentation
-- Share your learnings and discoveries
+### Modern Java Features & Architecture Patterns
+- **Java 21 LTS**: Records, Virtual Threads, Pattern Matching
+- Structured Concurrency for coordinated processing
+- String Templates and Sequenced Collections
+- **Modular Monolith vs Microservices**: Direct comparison of architectural approaches
+- **Internal vs External Communication**: Spring Events vs HTTP/Messaging
 
-## 📖 Documentation
-
-Detailed documentation for each topic can be found in the `/docs` directory:
-- [Java 21 LTS Features Guide](docs/JAVA_21_FEATURES.md) - Complete guide to Java 21 features used in the project
-- [Database Architecture Analysis](docs/DATABASE_ARCHITECTURE_ANALYSIS.md) - Shared vs separated database trade-offs
-- [Project Implementation Plan](docs/PROJECT_PLAN.md) - Detailed 10-phase roadmap
-- [Architecture Decision Records](docs/architecture/ADRs.md)
-- [API Documentation](docs/api/)
-- [Deployment Guide](docs/deployment/)
-- [Testing Strategy](docs/testing.md)
-- [Monitoring Setup](docs/monitoring.md)
+### Cloud Technologies
+- AWS services simulation with LocalStack
+- Serverless architecture with Lambda functions
+- Message queuing and event processing
+- Distributed system patterns and practices
 
 ## 🎯 Current Phase: Phase 2 - Core Services Development
-
-We've completed Phase 1 (Foundation & Infrastructure) ✅ and are now ready for Phase 2:
 
 **Phase 1 Completed** ✅:
 - [x] Project structure and comprehensive documentation  
 - [x] Maven multi-module build system with all dependencies
 - [x] Complete Docker infrastructure stack (PostgreSQL, MongoDB, Redis, RabbitMQ, Kafka, LocalStack, ELK, Prometheus, Grafana, SonarQube)
 - [x] Monitoring and observability configuration
-- [x] Development environment automation
+- [x] **Environment-based secrets management** with dev/staging/prod separation
+- [x] **Complete secret externalization** - zero hardcoded secrets
+- [x] Dev environment automation
 
 **Phase 2 Next Steps** 🔄:
 - [ ] Domain design and entity modeling (DDD approach)
+- [ ] **Modular monolith implementation** (platform-service with internal modules)
+- [ ] **Microservices implementation** (distributed services with HTTP/messaging)
+- [ ] **Architecture comparison** - direct imports vs distributed communication
 - [ ] Database layer with Flyway migrations  
 - [ ] Repository and service layer implementation
+- [ ] **Docker containerization** of all Spring Boot services
 - [ ] REST API development with OpenAPI documentation
-- [ ] Spring Security with OAuth2 integration
-- [ ] Comprehensive testing with 80%+ coverage
+- [ ] Multi-authentication security implementation
+- [ ] **Centralized logging integration** (Spring Boot → ELK stack)
+- [ ] Java 21 modern features integration
+- [ ] Comprehensive testing with 80% code coverage
 
-📋 **Full Roadmap**: See [PROJECT_PLAN.md](docs/PROJECT_PLAN.md) for the complete 10-phase implementation plan with detailed substeps.
+## 🔗 Useful Links
+
+- **Documentation**: `/docs` directory for detailed guides
+- **API Docs**: Available via Swagger UI (when services are running)
+- **Monitoring**: Grafana dashboards for metrics and logs
+- **Code Quality**: SonarQube reports for code analysis
+
+## 🤝 Contributing
+
+1. Follow the phase-based development approach
+2. Maintain 80%+ test coverage
+3. Use conventional commits
+4. Update documentation for new features
+5. **Never commit secrets** - use environment variables
 
 ---
 
-*"It's alive! IT'S ALIVE!"* - Dr. Frankenstein (probably talking about microservices)
-
+**Ready to build something amazing? Let's get started with Phase 2!** 🚀

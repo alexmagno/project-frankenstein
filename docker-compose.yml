@@ -1,66 +1,178 @@
 version: '3.8'
 
 services:
-  # PostgreSQL Database (Write Side)
-  postgres:
-    image: postgres:15-alpine
-    container_name: frankenstein-postgres
+  # User Service Database
+  user-db:
+    image: postgres:18-alpine
+    container_name: frankenstein-user-db
     environment:
-      POSTGRES_DB: frankenstein
-      POSTGRES_USER: frankenstein
-      POSTGRES_PASSWORD: frankenstein123
-      POSTGRES_REPLICATION_MODE: primary
-      POSTGRES_REPLICATION_USER: replicator
-      POSTGRES_REPLICATION_PASSWORD: replicator123
+      POSTGRES_DB: user_service_db
+      POSTGRES_USER: user_service
+      POSTGRES_PASSWORD: ${USER_SERVICE_DATASOURCE_PASSWORD}
+      USER_SERVICE_DATASOURCE_PASSWORD: ${USER_SERVICE_DATASOURCE_PASSWORD}
+      USER_SAGA_PASSWORD: ${USER_SAGA_PASSWORD}
     ports:
       - "5432:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
-      - ./infrastructure/docker/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
-      - ./infrastructure/docker/postgres/postgresql.conf:/etc/postgresql/postgresql.conf
-      - ./infrastructure/docker/postgres/pg_hba.conf:/etc/postgresql/pg_hba.conf
+      - user_db_data:/var/lib/postgresql/data
+      - ./infrastructure/docker/postgres/user-db-init.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
       - frankenstein-network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U frankenstein"]
+      test: ["CMD-SHELL", "pg_isready -U user_service"]
       interval: 30s
       timeout: 10s
       retries: 3
 
-  # PostgreSQL Read Replica (Analytics & Reporting)
-  postgres-read-replica:
-    image: postgres:15-alpine
-    container_name: frankenstein-postgres-replica
+  # Inventory Service Database  
+  inventory-db:
+    image: postgres:18-alpine
+    container_name: frankenstein-inventory-db
     environment:
-      POSTGRES_DB: frankenstein
-      POSTGRES_USER: frankenstein
-      POSTGRES_PASSWORD: frankenstein123
-      POSTGRES_MASTER_SERVICE: postgres
-      POSTGRES_REPLICATION_MODE: replica
-      POSTGRES_REPLICATION_USER: replicator
-      POSTGRES_REPLICATION_PASSWORD: replicator123
+      POSTGRES_DB: inventory_service_db
+      POSTGRES_USER: inventory_service
+      POSTGRES_PASSWORD: ${INVENTORY_SERVICE_DATASOURCE_PASSWORD}
+      INVENTORY_SERVICE_DATASOURCE_PASSWORD: ${INVENTORY_SERVICE_DATASOURCE_PASSWORD}
+      INVENTORY_SAGA_PASSWORD: ${INVENTORY_SAGA_PASSWORD}
     ports:
       - "5433:5432"
     volumes:
-      - postgres_replica_data:/var/lib/postgresql/data
+      - inventory_db_data:/var/lib/postgresql/data
+      - ./infrastructure/docker/postgres/inventory-db-init.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
       - frankenstein-network
-    depends_on:
-      - postgres
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U frankenstein"]
+      test: ["CMD-SHELL", "pg_isready -U inventory_service"]
       interval: 30s
       timeout: 10s
       retries: 3
+
+  # Order Service Database
+  order-db:
+    image: postgres:18-alpine
+    container_name: frankenstein-order-db
+    environment:
+      POSTGRES_DB: order_service_db
+      POSTGRES_USER: order_service
+      POSTGRES_PASSWORD: ${ORDER_SERVICE_DATASOURCE_PASSWORD}
+      ORDER_SERVICE_DATASOURCE_PASSWORD: ${ORDER_SERVICE_DATASOURCE_PASSWORD}
+      ORDER_SAGA_PASSWORD: ${ORDER_SAGA_PASSWORD}
+    ports:
+      - "5434:5432"
+    volumes:
+      - order_db_data:/var/lib/postgresql/data
+      - ./infrastructure/docker/postgres/order-db-init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - frankenstein-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U order_service"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Payment Service Database
+  payment-db:
+    image: postgres:18-alpine
+    container_name: frankenstein-payment-db
+    environment:
+      POSTGRES_DB: payment_service_db
+      POSTGRES_USER: payment_service
+      POSTGRES_PASSWORD: ${PAYMENT_SERVICE_DATASOURCE_PASSWORD}
+      PAYMENT_SERVICE_DATASOURCE_PASSWORD: ${PAYMENT_SERVICE_DATASOURCE_PASSWORD}
+      PAYMENT_SAGA_PASSWORD: ${PAYMENT_SAGA_PASSWORD}
+    ports:
+      - "5435:5432"
+    volumes:
+      - payment_db_data:/var/lib/postgresql/data
+      - ./infrastructure/docker/postgres/payment-db-init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - frankenstein-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U payment_service"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Notification Service Database
+  notification-db:
+    image: postgres:18-alpine
+    container_name: frankenstein-notification-db
+    environment:
+      POSTGRES_DB: notification_service_db
+      POSTGRES_USER: notification_service
+      POSTGRES_PASSWORD: ${NOTIFICATION_SERVICE_DATASOURCE_PASSWORD}
+      NOTIFICATION_SERVICE_DATASOURCE_PASSWORD: ${NOTIFICATION_SERVICE_DATASOURCE_PASSWORD}
+      NOTIFICATION_SAGA_PASSWORD: ${NOTIFICATION_SAGA_PASSWORD}
+    ports:
+      - "5437:5432"
+    volumes:
+      - notification_db_data:/var/lib/postgresql/data
+      - ./infrastructure/docker/postgres/notification-db-init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - frankenstein-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U notification_service"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Analytics Database (Cross-Service Analytics & OLAP)
+  analytics-db:
+    image: postgres:18-alpine
+    container_name: frankenstein-analytics-db
+    environment:
+      POSTGRES_DB: analytics_db
+      POSTGRES_USER: analytics_service
+      POSTGRES_PASSWORD: ${ANALYTICS_SERVICE_DATASOURCE_PASSWORD}
+      ANALYTICS_SERVICE_DATASOURCE_PASSWORD: ${ANALYTICS_SERVICE_DATASOURCE_PASSWORD}
+      ANALYTICS_SAGA_PASSWORD: ${ANALYTICS_SAGA_PASSWORD}
+    ports:
+      - "5438:5432"
+    volumes:
+      - analytics_db_data:/var/lib/postgresql/data
+      - ./infrastructure/docker/postgres/analytics-db-init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - frankenstein-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U analytics_service"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Infrastructure Database (SonarQube, Unleash)
+  infrastructure-db:
+    image: postgres:18-alpine
+    container_name: frankenstein-infrastructure-db
+    environment:
+      POSTGRES_DB: infrastructure_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${INFRASTRUCTURE_DB_PASSWORD}
+      SONARQUBE_JDBC_PASSWORD: ${SONARQUBE_JDBC_PASSWORD}
+      UNLEASH_JDBC_PASSWORD: ${UNLEASH_JDBC_PASSWORD}
+      SAGA_COORDINATOR_PASSWORD: ${SAGA_COORDINATOR_PASSWORD}
+      SAGA_PARTICIPANT_PASSWORD: ${SAGA_PARTICIPANT_PASSWORD}
+    ports:
+      - "5439:5432"
+    volumes:
+      - infrastructure_db_data:/var/lib/postgresql/data
+      - ./infrastructure/docker/postgres/infrastructure-db-init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - frankenstein-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
 
   # MongoDB Database
   mongodb:
     image: mongo:7.0
     container_name: frankenstein-mongodb
     environment:
-      MONGO_INITDB_ROOT_USERNAME: frankenstein
-      MONGO_INITDB_ROOT_PASSWORD: frankenstein123
-      MONGO_INITDB_DATABASE: frankenstein
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGODB_PASSWORD}
+      MONGO_INITDB_DATABASE: frankenstein_read_models
     ports:
       - "27017:27017"
     volumes:
@@ -94,8 +206,8 @@ services:
     image: rabbitmq:3-management-alpine
     container_name: frankenstein-rabbitmq
     environment:
-      RABBITMQ_DEFAULT_USER: frankenstein
-      RABBITMQ_DEFAULT_PASS: frankenstein123
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASSWORD: ${RABBITMQ_PASSWORD}
     ports:
       - "5672:5672"   # AMQP port
       - "15672:15672" # Management UI
@@ -129,8 +241,8 @@ services:
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
@@ -150,10 +262,10 @@ services:
       - "4566:4566"     # LocalStack Gateway
       - "4510-4559:4510-4559"  # External services port range
     environment:
-      DEBUG: 1
-      SERVICES: sqs,s3,lambda,iam,cloudformation
-      DATA_DIR: /tmp/localstack/data
-      DOCKER_HOST: unix:///var/run/docker.sock
+      LOCALSTACK_DEBUG: 1
+      LOCALSTACK_SERVICES: s3,dynamodb,lambda,sqs,sns,secretsmanager,eventbridge
+      LOCALSTACK_DATA_DIR: /tmp/localstack
+      LOCALSTACK_DOCKER_HOST: unix:///var/run/docker.sock
     volumes:
       - localstack_data:/tmp/localstack
       - "/var/run/docker.sock:/var/run/docker.sock"
@@ -185,7 +297,7 @@ services:
     ports:
       - "3001:3000"
     environment:
-      GF_SECURITY_ADMIN_PASSWORD: admin123
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD}
     volumes:
       - grafana_data:/var/lib/grafana
       - ./infrastructure/monitoring/grafana/dashboards:/etc/grafana/provisioning/dashboards
@@ -256,6 +368,23 @@ services:
     depends_on:
       - elasticsearch
 
+  # Filebeat - Log Collection  
+  filebeat:
+    image: elastic/filebeat:8.11.0
+    container_name: frankenstein-filebeat
+    user: root
+    volumes:
+      - ./infrastructure/monitoring/filebeat/filebeat.yml:/usr/share/filebeat/filebeat.yml:ro
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - filebeat_data:/usr/share/filebeat/data
+    networks:
+      - frankenstein-network
+    depends_on:
+      - logstash
+    environment:
+      - strict.perms=false
+
   # SonarQube for Code Quality
   sonarqube:
     image: sonarqube:10.2-community
@@ -263,9 +392,9 @@ services:
     ports:
       - "9000:9000"
     environment:
-      SONAR_JDBC_URL: jdbc:postgresql://postgres:5432/sonarqube
-      SONAR_JDBC_USERNAME: frankenstein
-      SONAR_JDBC_PASSWORD: frankenstein123
+      SONAR_JDBC_URL: jdbc:postgresql://infrastructure-db:5432/sonarqube
+      SONAR_JDBC_USERNAME: sonarqube_user
+      SONAR_JDBC_PASSWORD: ${SONARQUBE_JDBC_PASSWORD}
     volumes:
       - sonarqube_data:/opt/sonarqube/data
       - sonarqube_logs:/opt/sonarqube/logs
@@ -273,7 +402,7 @@ services:
     networks:
       - frankenstein-network
     depends_on:
-      - postgres
+      - infrastructure-db
 
   # Unleash Feature Flag Server
   unleash:
@@ -282,27 +411,172 @@ services:
     ports:
       - "4242:4242"
     environment:
-      DATABASE_HOST: postgres
+      DATABASE_HOST: infrastructure-db
       DATABASE_NAME: unleash
-      DATABASE_USERNAME: frankenstein
-      DATABASE_PASSWORD: frankenstein123
+      DATABASE_USERNAME: unleash_user
+      DATABASE_PASSWORD: ${UNLEASH_JDBC_PASSWORD}
       DATABASE_SSL: "false"
       LOG_LEVEL: "warn"
-      INIT_FRONTEND_API_TOKENS: "default:development.unleash-insecure-frontend-api-token"
-      INIT_CLIENT_API_TOKENS: "default:development.unleash-insecure-api-token"
+      INIT_FRONTEND_API_TOKENS: ${UNLEASH_FRONTEND_TOKEN}
+      INIT_CLIENT_API_TOKENS: ${UNLEASH_CLIENT_TOKEN}
     networks:
       - frankenstein-network
     depends_on:
-      - postgres
+      - infrastructure-db
     healthcheck:
       test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:4242/health"]
       interval: 30s
       timeout: 10s
       retries: 3
 
+  # User Service (Phase 2)
+  user-service:
+    build:
+      context: ./services/user-service
+      dockerfile: Dockerfile
+    container_name: frankenstein-user-service
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      SPRING_DATASOURCE_URL: jdbc:postgresql://user-db:5432/user_service_db
+      SPRING_DATASOURCE_USERNAME: user_service
+      SPRING_DATASOURCE_PASSWORD: ${USER_SERVICE_DATASOURCE_PASSWORD}
+    ports:
+      - "8081:8080"
+      - "8091:8090"
+    networks:
+      - frankenstein-network
+    depends_on:
+      - user-db
+      - rabbitmq
+    mem_limit: 1g
+    cpus: 0.75
+
+  # Inventory Service (Phase 2)
+  inventory-service:
+    build:
+      context: ./services/inventory-service
+      dockerfile: Dockerfile
+    container_name: frankenstein-inventory-service
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      SPRING_DATASOURCE_URL: jdbc:postgresql://inventory-db:5432/inventory_service_db
+      SPRING_DATASOURCE_USERNAME: inventory_service
+      SPRING_DATASOURCE_PASSWORD: ${INVENTORY_SERVICE_DATASOURCE_PASSWORD}
+    ports:
+      - "8082:8080"
+      - "8092:8090"
+    networks:
+      - frankenstein-network
+    depends_on:
+      - inventory-db
+      - rabbitmq
+    mem_limit: 1g
+    cpus: 0.75
+
+  # Order Service (Phase 2)
+  order-service:
+    build:
+      context: ./services/order-service
+      dockerfile: Dockerfile
+    container_name: frankenstein-order-service
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      SPRING_DATASOURCE_URL: jdbc:postgresql://order-db:5432/order_service_db
+      SPRING_DATASOURCE_USERNAME: order_service
+      SPRING_DATASOURCE_PASSWORD: ${ORDER_SERVICE_DATASOURCE_PASSWORD}
+    ports:
+      - "8083:8080"
+      - "8093:8090"
+    networks:
+      - frankenstein-network
+    depends_on:
+      - order-db
+      - rabbitmq
+    mem_limit: 1g
+    cpus: 0.75
+
+  # Payment Service
+  payment-service:
+    build:
+      context: ./services/payment-service
+      dockerfile: Dockerfile
+    container_name: frankenstein-payment-service
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      SPRING_DATASOURCE_URL: jdbc:postgresql://payment-db:5432/payment_service_db
+      SPRING_DATASOURCE_USERNAME: payment_service
+      SPRING_DATASOURCE_PASSWORD: ${PAYMENT_SERVICE_DATASOURCE_PASSWORD}
+      AWS_ENDPOINT_URL: http://localstack:4566
+    ports:
+      - "8084:8080"
+      - "8094:8090"
+    networks:
+      - frankenstein-network
+    depends_on:
+      - payment-db
+      - localstack
+      - kafka
+    mem_limit: 1g
+    cpus: 0.75
+
+  # Notification Service
+  notification-service:
+    build:
+      context: ./services/notification-service
+      dockerfile: Dockerfile
+    container_name: frankenstein-notification-service
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      SPRING_DATASOURCE_URL: jdbc:postgresql://notification-db:5432/notification_service_db
+      SPRING_DATASOURCE_USERNAME: notification_service
+      SPRING_DATASOURCE_PASSWORD: ${NOTIFICATION_SERVICE_DATASOURCE_PASSWORD}
+      AWS_ENDPOINT_URL: http://localstack:4566
+    ports:
+      - "8085:8080"
+      - "8095:8090"
+    networks:
+      - frankenstein-network
+    depends_on:
+      - notification-db
+      - localstack
+      - kafka
+    mem_limit: 1g
+    cpus: 0.75
+
+  # Backend For Frontend Service
+  bff-service:
+    build:
+      context: ./services/bff-service
+      dockerfile: Dockerfile
+    container_name: frankenstein-bff
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      REDIS_HOST: redis
+    ports:
+      - "8086:8080"
+      - "8096:8090"
+    networks:
+      - frankenstein-network
+    depends_on:
+      - redis
+      - user-db
+      - inventory-db 
+      - order-db
+      - payment-db
+      - notification-db
+      - mongodb
+    mem_limit: 1g
+    cpus: 0.75
+
+
 volumes:
-  postgres_data:
-  postgres_replica_data:
+  user_db_data:
+  inventory_db_data:
+  order_db_data:
+  payment_db_data:
+  notification_db_data:
+  analytics_db_data:
+  infrastructure_db_data:
   mongodb_data:
   redis_data:
   rabbitmq_data:
@@ -313,6 +587,7 @@ volumes:
   sonarqube_data:
   sonarqube_logs:
   sonarqube_extensions:
+  filebeat_data:
 
 networks:
   frankenstein-network:

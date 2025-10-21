@@ -36,6 +36,10 @@
         <cucumber.version>7.15.0</cucumber.version>
         <embedded-mongo.version>4.9.2</embedded-mongo.version>
         
+        <!-- AWS SDK versions -->
+        <aws-java-sdk.version>2.21.29</aws-java-sdk.version>
+        <spring-cloud-aws.version>3.1.0</spring-cloud-aws.version>
+        
         <!-- Plugin versions -->
         <maven-compiler-plugin.version>3.11.0</maven-compiler-plugin.version>
         <maven-surefire-plugin.version>3.2.2</maven-surefire-plugin.version>
@@ -47,8 +51,11 @@
 
     <modules>
         <module>services/user-service</module>
-        <module>services/product-service</module>
+        <module>services/inventory-service</module>
         <module>services/order-service</module>
+        <module>services/payment-service</module>
+        <module>services/notification-service</module>
+        <module>services/bff-service</module>
         <module>config/spring-cloud-config</module>
     </modules>
 
@@ -164,6 +171,15 @@
                 <groupId>de.flapdoodle.embed</groupId>
                 <artifactId>de.flapdoodle.embed.mongo</artifactId>
                 <version>${embedded-mongo.version}</version>
+            </dependency>
+            
+            <!-- AWS SDK BOM -->
+            <dependency>
+                <groupId>software.amazon.awssdk</groupId>
+                <artifactId>bom</artifactId>
+                <version>${aws-java-sdk.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
             </dependency>
         </dependencies>
     </dependencyManagement>
